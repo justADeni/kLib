@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 /**
  * Checks if the player is in the cuboid region that is formed by the two given locations.
@@ -40,7 +39,7 @@ fun Player.isInventoryFull(): Boolean {
  * Clears all the armor player wears.
  */
 fun Player.clearArmor() {
-    player.inventory.armorContents = arrayOf<ItemStack?>(null, null, null, null)
+    player?.inventory?.armorContents = arrayOf<ItemStack?>(null, null, null, null)
 }
 
 /**
@@ -55,7 +54,7 @@ fun Player.clearAllInventory() {
  * Gets the item in hand if it is not null and the type is not AIR.
  * @return ItemStack
  */
-val Player.hasItemInHand get() = itemInHand != null && itemInHand.type != Material.AIR
+val Player.hasItemInHand get() = inventory.itemInMainHand.type != Material.AIR
 
 /**
  * Plays sound in player's location.
@@ -70,20 +69,20 @@ fun Player.playSound(sound: Sound, volume: Float, pitch: Float) = playSound(loca
  * @param effect Effect
  * @param data Effect data
  */
-fun <T> Player.playEffect(effect: Effect, data: T? = null) = playEffect(player.location, effect, data)
+fun <T> Player.playEffect(effect: Effect, data: T? = null) = player?.location?.let { playEffect(it, effect, data) }
 
 /**
  * Resets the walk speed of the player.
  */
 fun Player.resetWalkSpeed() {
-    player.walkSpeed = 0.2f
+    player?.walkSpeed = 0.2f
 }
 
 /**
  * Resets the fly speed of the player.
  */
 fun Player.resetFlySpeed() {
-    player.flySpeed = 0.1f
+    player?.flySpeed = 0.1f
 }
 
 /**
@@ -149,82 +148,6 @@ suspend fun Entity.teleportAsync(mcPlugin: MCPlugin, entity: Entity) {
 }
 
 /**
- * Bans the player with the given reason.
- * @param reason Reason string
- */
-fun Player.ban(reason: String) {
-    this.kickPlayer(reason)
-    Bukkit.getBanList(BanList.Type.NAME).addBan(this.name, reason, null, null)
-}
-
-/**
- * Bans the player with the given reason and source.
- * @param reason Reason string
- * @param source Source string
- */
-fun Player.ban(reason: String, source: String) {
-    this.kickPlayer(reason)
-    Bukkit.getBanList(BanList.Type.NAME).addBan(this.name, reason, null, source)
-}
-
-/**
- * Bans the player temporarily until the expiration date with the given reason and given source.
- * @param reason Reason string
- * @param source Source string
- * @param expiration Expiration date
- */
-fun Player.ban(reason: String, source: String, expiration: Date) {
-    this.kickPlayer(reason)
-    Bukkit.getBanList(BanList.Type.NAME).addBan(this.name, reason, expiration, source)
-}
-
-/**
- * Bans the player temporarily until the expiration date with the given reason.
- * @param reason Reason string
- * @param expiration Expiration date
- */
-fun Player.ban(reason: String, expiration: Date) {
-    this.kickPlayer(reason)
-    Bukkit.getBanList(BanList.Type.NAME).addBan(this.name, reason, expiration, null)
-}
-
-/**
- * Bans the player's IP address with the given reason.
- * @param reason Reason string
- */
-fun Player.banIP(reason: String?) {
-    this.kickPlayer(reason)
-    if (this.address != null) {
-        Bukkit.getBanList(BanList.Type.IP).addBan(this.address.address.hostAddress, reason, null, null)
-    }
-}
-
-/**
- * Bans the player's IP address with the given reason and source.
- * @param reason Reason string
- * @param source Source string
- */
-fun Player.banIP(reason: String?, source: String?) {
-    this.kickPlayer(reason)
-    if (this.address != null) {
-        Bukkit.getBanList(BanList.Type.IP).addBan(this.address.address.hostAddress, reason, null, source)
-    }
-}
-
-/**
- * Bans the player's IP address temporarily until the expiration date with the given reason and source.
- * @param reason Reason string
- * @param source Source string
- * @param expiration Expiration date
- */
-fun Player.banIP(reason: String, source: String, expiration: Date) {
-    this.kickPlayer(reason)
-    if (this.address != null) {
-        Bukkit.getBanList(BanList.Type.IP).addBan(this.address.address.hostAddress, reason, expiration, source)
-    }
-}
-
-/**
  * Heals and feeds the player.
  */
 fun Player.heal() {
@@ -261,10 +184,10 @@ fun Player.getBlockBelow(): Block = this.location.subtract(0.0, 1.0, 0.0).block
  * Kills the player.
  */
 fun Player.kill() {
-    player.health = 0.0
+    player?.health = 0.0
 }
 
 fun Player.ejectPassengers() {
-    if (player.vehicle != null) player.vehicle.eject();
-    player.eject();
+    if (player?.vehicle != null) player?.vehicle?.eject();
+    player?.eject();
 }

@@ -26,7 +26,7 @@ open class Cuboid(val point1: Location, val point2: Location) {
     private val yMaxCentered = yMax + 0.5
     private val zMinCentered = zMin + 0.5
     private val zMaxCentered = zMax + 0.5
-    private val world: World = point1.world
+    private val world: World = point1.world!!
 
     /**
      * Gets the array list of blocks in this cuboid region.s

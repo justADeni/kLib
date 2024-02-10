@@ -27,7 +27,7 @@ fun Chunk.fromString(string: String): Chunk? {
 
     return try {
         val world = Bukkit.getWorld(varargs[0])
-        world.getChunkAt(varargs[1].toInt(),varargs[2].toInt())
+        world?.getChunkAt(varargs[1].toInt(),varargs[2].toInt())
     } catch (e: Exception) {
         null
     }

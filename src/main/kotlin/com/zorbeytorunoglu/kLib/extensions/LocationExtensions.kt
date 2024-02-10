@@ -4,6 +4,8 @@ import com.zorbeytorunoglu.kLib.MCPlugin
 import com.zorbeytorunoglu.kLib.task.MCDispatcher
 import com.zorbeytorunoglu.kLib.task.Scopes
 import com.zorbeytorunoglu.kLib.task.suspendFunctionSync
+import com.zorbeytorunoglu.kLib.task.suspendFunctionSyncWithResult
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.Effect
@@ -16,7 +18,7 @@ import org.bukkit.inventory.ItemStack
  * @param entityType EntityType
  */
 fun Location.spawnEntity(entityType: EntityType) {
-    this.world.spawnEntity(this, entityType)
+    this.world?.spawnEntity(this, entityType)
 }
 
 /**
@@ -24,7 +26,7 @@ fun Location.spawnEntity(entityType: EntityType) {
  * @param item ItemStack
  */
 fun Location.dropItem(item: ItemStack) {
-    world.dropItem(this, item)
+    world?.dropItem(this, item)
 }
 
 /**
@@ -32,29 +34,29 @@ fun Location.dropItem(item: ItemStack) {
  * @param item ItemStack
  */
 fun Location.dropItemNaturally(item: ItemStack) {
-    world.dropItemNaturally(this, item)
+    world?.dropItemNaturally(this, item)
 }
 
 /**
  * Strikes a lightning on the location.
  */
 fun Location.strikeLightning() {
-    world.strikeLightning(this)
+    world?.strikeLightning(this)
 }
 
 /**
  * Sends a lightning strike effect to the location.
  */
 fun Location.strikeLightningEffect() {
-    world.strikeLightningEffect(this)
+    world?.strikeLightningEffect(this)
 }
 
 /**
  * Creates an explosion with the given power in the location.
  * @param power Power of the explosion
  */
-fun Location.createExplosion(power: Float) {
-    world.createExplosion(this, power)
+fun Location.createExplosion(power: Float): Boolean {
+    return world?.createExplosion(this, power) ?: false
 }
 
 /**
@@ -63,8 +65,8 @@ fun Location.createExplosion(power: Float) {
  * @param power Power float
  * @param fire Should cause fire
  */
-fun Location.createExplosion(power: Float, fire: Boolean) {
-    world.createExplosion(this, power, fire)
+fun Location.createExplosion(power: Float, fire: Boolean): Boolean {
+    return world?.createExplosion(this, power, fire) ?: false
 }
 
 /**
@@ -74,8 +76,8 @@ fun Location.createExplosion(power: Float, fire: Boolean) {
  * @param fire Should cause fire boolean
  * @param breakBlocks Should break blocks boolean
  */
-fun Location.createExplosion(power: Float, fire: Boolean, breakBlocks: Boolean) {
-    world.createExplosion(this.x, this.y, this.z, power, fire, breakBlocks)
+fun Location.createExplosion(power: Float, fire: Boolean, breakBlocks: Boolean): Boolean {
+    return world?.createExplosion(this.x, this.y, this.z, power, fire, breakBlocks) ?: false
 }
 
 /**
@@ -86,14 +88,12 @@ fun Location.createExplosion(power: Float, fire: Boolean, breakBlocks: Boolean) 
  * @param fire Should cause fire boolean
  * @param breakBlocks Should break blocks boolean
  */
-suspend fun Location.createExplosionAsync(plugin: MCPlugin, power: Float, fire: Boolean, breakBlocks: Boolean) {
-    Scopes.supervisorScope.launch {
-
-        plugin.suspendFunctionSync {
-            world.createExplosion(this@createExplosionAsync.x, this@createExplosionAsync.y, this@createExplosionAsync.z, power, fire, breakBlocks)
+suspend fun Location.createExplosionAsync(plugin: MCPlugin, power: Float, fire: Boolean, breakBlocks: Boolean): Boolean {
+    return Scopes.supervisorScope.async {
+        plugin.suspendFunctionSyncWithResult {
+            world?.createExplosion(this@createExplosionAsync.x, this@createExplosionAsync.y, this@createExplosionAsync.z, power, fire, breakBlocks) ?: false
         }
-
-    }.join()
+    }.await()
 }
 
 /**
@@ -102,7 +102,7 @@ suspend fun Location.createExplosionAsync(plugin: MCPlugin, power: Float, fire: 
  * @param data Effect data
  */
 fun Location.playEffect(effect: Effect, data: Int) {
-    world.playEffect(this, effect, data)
+    world?.playEffect(this, effect, data)
 }
 
 /**
@@ -112,7 +112,7 @@ fun Location.playEffect(effect: Effect, data: Int) {
  * @param radius Radius
  */
 fun Location.playEffect(effect: Effect, data: Int, radius: Int) {
-    world.playEffect(this, effect, data, radius)
+    world?.playEffect(this, effect, data, radius)
 }
 
 /**
@@ -121,7 +121,7 @@ fun Location.playEffect(effect: Effect, data: Int, radius: Int) {
  * @param data Any
  */
 fun <T> Location.playEffect(effect: Effect, data: T) {
-    world.playEffect(this, effect, data)
+    world?.playEffect(this, effect, data)
 }
 
 /**
@@ -131,7 +131,7 @@ fun <T> Location.playEffect(effect: Effect, data: T) {
  * @param radius Radius
  */
 fun <T> Location.playEffect(effect: Effect, data: T, radius: Int) {
-    world.playEffect(this, effect, data, radius)
+    world?.playEffect(this, effect, data, radius)
 }
 
 /**
@@ -142,7 +142,7 @@ fun <T> Location.playEffect(effect: Effect, data: T, radius: Int) {
 suspend fun Location.spawnEntityAsync(mcPlugin: MCPlugin, entityType: EntityType) {
 
     Scopes.supervisorScope.launch(MCDispatcher(mcPlugin, async = false)) {
-        mcPlugin.suspendFunctionSync { world.spawnEntity(this@spawnEntityAsync, entityType) }
+        mcPlugin.suspendFunctionSync { world?.spawnEntity(this@spawnEntityAsync, entityType) }
     }.join()
 
 }
@@ -152,7 +152,7 @@ suspend fun Location.spawnEntityAsync(mcPlugin: MCPlugin, entityType: EntityType
  * @return String
  */
 fun Location.toLegibleString(): String =
-    "${this.world.name};${this.x};${this.y};${this.z};${this.yaw};${this.pitch}"
+    "${this.world?.name};${this.x};${this.y};${this.z};${this.yaw};${this.pitch}"
 
 /**
  * Converts a legible Location String to Location.

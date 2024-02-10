@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "2.0.0-Beta3"
     id("java")
     `maven-publish`
     id ("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 group = "com.zorbeytorunoglu"
-version = "0.0.8"
+version = "0.0.9"
 
 repositories {
     mavenCentral()
@@ -19,16 +19,19 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0-Beta3")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:2.0.0-Beta3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.2")
     implementation("org.apache.maven:maven-artifact:3.8.7")
-    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 }
 
 tasks {
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.languageVersion = "2.0"
+        kotlinOptions.jvmTarget = "17"
     }
 
 }
@@ -42,7 +45,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.zorbeytorunoglu"
             artifactId = "kLib"
-            version = "0.0.8"
+            version = "0.0.9"
 
             from(components["java"])
         }

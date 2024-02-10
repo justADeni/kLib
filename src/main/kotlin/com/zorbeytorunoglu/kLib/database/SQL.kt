@@ -1,5 +1,6 @@
 package com.zorbeytorunoglu.kLib.database
 
+import kotlinx.coroutines.Runnable
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import java.sql.Connection
@@ -45,8 +46,10 @@ class SQL(val host: String, val port: String, val database:String, val username:
     }
 
     fun execute(plugin: Plugin, query: String, async: Boolean) {
-        if (async) Bukkit.getScheduler().runTaskAsynchronously(plugin) { executeQuery(query) }
-        else executeQuery(query)
+        if (async)
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable { executeQuery(query) } )
+        else
+            executeQuery(query)
     }
 
     fun getResults(query: String): ResultSet? {
@@ -61,7 +64,9 @@ class SQL(val host: String, val port: String, val database:String, val username:
 
     fun forEach(plugin: Plugin, query: String, lambda: Consumer<ResultSet>, async: Boolean) {
         if (async) Bukkit.getScheduler()
-            .runTaskAsynchronously(plugin) { forEachLambda(query, lambda) } else forEachLambda(query, lambda)
+            .runTaskAsynchronously(plugin, Runnable { forEachLambda(query, lambda) })
+        else
+            forEachLambda(query, lambda)
     }
 
     private fun forEachLambda(query: String, lambda: Consumer<ResultSet>) {

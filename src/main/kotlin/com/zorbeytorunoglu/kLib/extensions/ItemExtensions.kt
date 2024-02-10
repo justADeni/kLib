@@ -22,7 +22,7 @@ var ItemMeta.loreString: String?
  */
 var ItemMeta.name: String?
     get() = if (hasDisplayName()) displayName else null
-    set(value) { displayName = if (!value.isNullOrEmpty()) value else " " }
+    set(value) { setDisplayName(if (!value.isNullOrEmpty()) value else " ") }
 
 /**
  * Removes specific amount of item from the item stack of player, updates the inventory of the player.
@@ -32,16 +32,16 @@ var ItemMeta.name: String?
 fun ItemStack.removeAmount(player: Player, amount: Int) {
 
     if (this.amount - amount <= 0) {
-        if (player.inventory.itemInHand.equals(this)) {
-            player.inventory.itemInHand = null
+        if (player.inventory.itemInMainHand == this) {
+            player.inventory.setItemInMainHand(null)
         } else {
             player.inventory.removeItem(this)
         }
         return
     }
 
-    this.amount = this.amount-amount
-    player.updateInventory()
+    this.amount -= amount
+    //player.updateInventory()
 
 }
 
@@ -57,9 +57,9 @@ fun ItemStack.setLore(vararg lore: String, color: Boolean) {
     if (color) {
         val colored = ArrayList<String>()
         lore.forEach { colored.add(it.color) }
-        meta.lore = colored
+        meta?.lore = colored
     } else {
-        meta.lore = lore.asList()
+        meta?.lore = lore.asList()
     }
 
     this.itemMeta = meta
@@ -74,7 +74,7 @@ fun ItemStack.setLore(loreList: List<String>) {
 
     val meta = (if (this.hasItemMeta()) this.itemMeta else Bukkit.getItemFactory().getItemMeta(this.type))
 
-    meta.lore = loreList
+    meta?.lore = loreList
 
     this.itemMeta = meta
 
