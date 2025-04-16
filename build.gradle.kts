@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.zorbeytorunoglu"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -41,7 +41,6 @@ tasks {
 
 tasks.shadowJar {
     archiveClassifier.set("")
-    transform(ServiceFileTransformer::class.java)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
