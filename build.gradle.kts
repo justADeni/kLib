@@ -1,12 +1,17 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.gradle.api.file.DuplicatesStrategy
+
 plugins {
-    kotlin("jvm") version "2.0.0-Beta3"
+    kotlin("jvm") version "2.1.0"
     id("java")
-    `maven-publish`
-    id ("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1" apply true
+    id("maven-publish")
 }
 
 group = "com.zorbeytorunoglu"
-version = "0.0.9"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -19,33 +24,33 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0-Beta3")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:2.0.0-Beta3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.2")
-    implementation("org.apache.maven:maven-artifact:3.8.7")
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:2.0.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
+    implementation("org.apache.maven:maven-artifact:4.0.0-rc-3")
+    compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
 }
 
 tasks {
-
     compileKotlin {
-        kotlinOptions.languageVersion = "2.0"
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_1)
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
-
 }
 
-tasks.shadowJar.configure {
+tasks.shadowJar {
     archiveClassifier.set("")
+    transform(ServiceFileTransformer::class.java)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.zorbeytorunoglu"
+            groupId = project.group.toString()
             artifactId = "kLib"
-            version = "0.0.9"
+            version = project.version.toString()
 
             from(components["java"])
         }
